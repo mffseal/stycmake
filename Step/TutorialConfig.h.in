@@ -1,0 +1,12 @@
+//
+// Created by mffseal on 2022/11/5.
+//
+
+#ifndef STYCMAKE_TUTORIALCONFIG_H
+#define STYCMAKE_TUTORIALCONFIG_H
+
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
+#cmakedefine USE_MYMATH
+
+#endif //STYCMAKE_TUTORIALCONFIG_H
