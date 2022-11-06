@@ -5,17 +5,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(Tutorial tutorial.cpp)  # 指定项目对应的可执行文件入口
 
+
 # 启用编译器警告，通过表达式生成器完成
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")  # 通过COMPILE_LANG_AND_ID判断环境，并为gcc_like_cxx赋值
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")  # 同上
 
 # 定义interface library，用其作为载体传递编译属性。只要模块用target_link_libraries链接了该interface library，则会应用其上的编译属性。
+add_library(tutorial_compiler_flags INTERFACE)
 # 配合表达式生成器判断编译环境，并赋予不同的编译参数
 # BUILD_INTERFACE表达式使得flags不会传递到已安装项目，而仅仅作用于
-add_library(tutorial_compiler_flags INTERFACE
+target_compile_options(tutorial_compiler_flags INTERFACE
         "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"  # 判断gcc_like_cxx 为true则输出后面内容
         "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
-        )  # 定义 interface library
+        )
 target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)  # 设置 interface library 编译属性
 
 option(USE_MYMATH "Use tutorial provided math implementation" ON)  # 默认值要在h.in文件前option，否则不会被应用
@@ -28,3 +30,7 @@ endif ()
 
 target_include_directories(Tutorial PUBLIC "${PROJECT_BINARY_DIR}")  # 将目标文件与库文件进行链接
 target_link_libraries(Tutorial PUBLIC ${EXTRA_LIBS} tutorial_compiler_flags)  # 指定某个目标对应要链接的链接库
+
+# 设置install
+install(TARGETS Tutorial DESTINATION bin)  # 指定二进制文件安装位置
+install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h" DESTINATION include)  # 头文件安装位置
